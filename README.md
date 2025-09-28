@@ -52,6 +52,35 @@ Example:
 
 ---
 
+## 💡 How Codex Limits Work
+
+Codex applies two different rate limit counters:
+
+- **Primary** → resets every **5 hours** (short-term limit).  
+- **Secondary** → resets every **7 days** (long-term weekly limit).  
+
+This tool helps you estimate **when each limit will recharge**, so you can plan usage better.
+
+---
+
+## 📈 Example Output
+
+```text
+📈 Global usage timeline:
+  001 | 2025-09-24T21:11:51.883Z → Primary: 1% | Secondary: 0%
+  002 | 2025-09-24T21:14:23.962Z → Primary: 3% | Secondary: 1%
+  ...
+  185 | 2025-09-26T18:38:53.533Z → Primary: 98% | Secondary: 99%
+  186 | 2025-09-26T18:38:57.141Z → Primary: 99% | Secondary: 100%
+  187 | 2025-09-26T18:39:02.626Z → Primary: 100% | Secondary: 100%
+
+✅ Last values → Primary: 100% | Secondary: 100% (ts=2025-09-26T18:39:02.626Z)  
+⏳ Estimated recharge in: 2 days, 23 hours and 13 minutes  
+📊 Max total tokens used: 35010120  
+📊 Sum of last task tokens: 72496393  
+
+---
+
 ## 💻 Installation
 
 ### Linux/macOS
