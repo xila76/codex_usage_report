@@ -1,4 +1,4 @@
-# Binaries gerados
+# Binaries
 dist/
 *.exe
 *.exe~
@@ -6,33 +6,33 @@ dist/
 *.so
 *.dylib
 
-# Arquivos de testes
+# Test binaries and outputs
 *.test
 *.out
 
-# IDE/editor
+# IDE/editor settings
 .vscode/
 .idea/
 *.swp
 *.swo
 
-# Go build cache
+# Logs and profiling
 *.log
 *.prof
 *.pprof
 
-# Módulos e cache do Go
+# Go module and build cache (only the generated ones, not your own pkg/)
 bin/
-pkg/
 go.work
 go.work.sum
+/go.sum  
+/pkg/mod/
+/pkg/sumdb/
 
-# Arquivos de dependências locais
+# Local dependencies
 vendor/
 
-# MacOS
+# OS-specific files
 .DS_Store
-
-# Linux
 *~
 
