@@ -114,6 +114,5 @@ The script copies the `.exe` to your Windows PATH.
     ├── dist/                     # build outputs
     ├── Makefile                  # build/release
     ├── go.mod
-    ├── go.sum
     └── README.md
 
