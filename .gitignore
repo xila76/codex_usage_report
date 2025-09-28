@@ -1,0 +1,38 @@
+# Binaries gerados
+dist/
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+
+# Arquivos de testes
+*.test
+*.out
+
+# IDE/editor
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Go build cache
+*.log
+*.prof
+*.pprof
+
+# Módulos e cache do Go
+bin/
+pkg/
+go.work
+go.work.sum
+
+# Arquivos de dependências locais
+vendor/
+
+# MacOS
+.DS_Store
+
+# Linux
+*~
+
