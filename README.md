@@ -78,6 +78,7 @@ This tool helps you estimate **when each limit will recharge**, so you can plan 
 ⏳ Estimated recharge in: 2 days, 23 hours and 13 minutes  
 📊 Max total tokens used: 35010120  
 📊 Sum of last task tokens: 72496393  
+```
 
 ---
 
