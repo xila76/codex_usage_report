@@ -1,6 +1,7 @@
 # 📊 codex_usage_report
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+![Go Version](https://img.shields.io/badge/Go-1.21%2B-blue)
 
 Go tool to analyze **OpenAI Codex** session files (`.jsonl`) and generate reports on token usage, consumption evolution, and cooldown (rate limit recharge) estimates.
 
