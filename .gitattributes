@@ -1,0 +1,36 @@
+# Default: normalize text files to LF in repo, auto-convert on checkout
+* text=auto eol=lf
+
+# Go source files
+*.go text eol=lf
+
+# Shell scripts
+*.sh text eol=lf
+
+# Makefiles
+Makefile text eol=lf
+
+# Markdown and docs
+*.md text eol=lf
+
+# JSON/JSONL
+*.json text eol=lf
+*.jsonl text eol=lf
+
+# Configs
+*.yml text eol=lf
+*.yaml text eol=lf
+*.toml text eol=lf
+
+# Windows batch files (keep CRLF)
+*.bat text eol=crlf
+
+# Binary files (no EOL normalization)
+*.exe binary
+*.dll binary
+*.so  binary
+*.dylib binary
+*.png binary
+*.jpg binary
+*.gif binary
+
