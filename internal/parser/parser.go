@@ -58,8 +58,16 @@ func ParseFile(filePath string, debug bool) ([]model.TimelineEntry, []model.Time
 
 		rl := logLine.Payload.RateLimits
 
-		primaryRaw := rl.PrimaryUsedPercent
-		secondaryRaw := rl.SecondaryUsedPercent
+		primaryRaw := rl.Primary.UsedPercent
+		if primaryRaw == 0 {
+			primaryRaw = rl.PrimaryUsedPercent
+		}
+
+		secondaryRaw := rl.Secondary.UsedPercent
+		if secondaryRaw == 0 {
+			secondaryRaw = rl.SecondaryUsedPercent
+		}
+
 
 		if primaryRaw == 0 && secondaryRaw == 0 {
 			continue

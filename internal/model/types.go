@@ -7,8 +7,12 @@ type RateLimitDetail struct {
 }
 
 type RateLimits struct {
-	Primary   RateLimitDetail `json:"primary"`
-	Secondary RateLimitDetail `json:"secondary"`
+
+	Primary              RateLimitDetail `json:"primary"`
+	Secondary            RateLimitDetail `json:"secondary"`
+	PrimaryUsedPercent   float64         `json:"primary_used_percent"`
+	SecondaryUsedPercent float64         `json:"secondary_used_percent"`
+
 }
 
 type TokenCount struct {
