@@ -23,6 +23,15 @@ func TestParseFileWithFractionalPrimaryPercent(t *testing.T) {
 	if len(timelineFull) == 0 {
 		t.Fatalf("expected at least one timeline entry, got 0")
 	}
+
+	entry := timelineFull[0]
+	if entry.Primary != 42 {
+		t.Fatalf("expected primary percent to round to 42, got %d", entry.Primary)
+	}
+
+	if entry.Secondary != 0 {
+		t.Fatalf("expected secondary percent to stay at 0, got %d", entry.Secondary)
+	}
 }
 
 func TestParseFileWithLegacyFlatRateLimitFields(t *testing.T) {
