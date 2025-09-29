@@ -5,6 +5,23 @@ MESSAGE_TITLE=${NOTIFY_TITLE:-"Codex quota"}
 MESSAGE_BODY=${NOTIFY_MESSAGE:-"Le quota Codex est de nouveau disponible."}
 IOS_SHORTCUT=${IOS_SHORTCUT_NAME:-}
 NTFY_TOPIC=${NTFY_TOPIC:-}
+POLL_INTERVAL=${POLL_INTERVAL:-300}
+LOG_FILE=${WATCH_LOG_FILE:-}
+
+log_line() {
+  local line=$1
+  local timestamp
+  timestamp=$(date '+%Y-%m-%d %H:%M:%S')
+  printf '[%s] %s\n' "$timestamp" "$line"
+  if [[ -n "$LOG_FILE" ]]; then
+    printf '[%s] %s\n' "$timestamp" "$line" >>"$LOG_FILE"
+  fi
+}
+
+if ! [[ $POLL_INTERVAL =~ ^[0-9]+$ ]] || (( POLL_INTERVAL <= 0 )); then
+  log_line "Valeur de POLL_INTERVAL invalide ('$POLL_INTERVAL'), utilisation de 300 secondes."
+  POLL_INTERVAL=300
+fi
 
 parse_seconds() {
   local text=$1
@@ -80,9 +97,9 @@ notify_all() {
   fi
 
   if [[ $macos_sent -ne 0 && $ios_sent -ne 0 ]]; then
-    printf '⚠️  Notification non envoyée automatiquement. Message: %s\n' "$message"
+    log_line "⚠️  Notification non envoyée automatiquement. Message: $message"
   else
-    printf '🔔 Notification envoyée (%s).\n' "$message"
+    log_line "🔔 Notification envoyée ($message)."
   fi
 }
 
@@ -93,16 +110,28 @@ cooldown_from_output() {
 
 default_command() {
   if command -v codex_usage_report >/dev/null 2>&1; then
-    COMMAND=(codex_usage_report --timeline)
+    COMMAND=(codex_usage_report)
     return
   fi
 
   if [[ -x "./dist/codex_usage_report" ]]; then
-    COMMAND=("./dist/codex_usage_report" --timeline)
+    COMMAND=("./dist/codex_usage_report")
     return
   fi
 
-  COMMAND=(go run ./cmd/codex_usage_report --timeline)
+  COMMAND=(go run ./cmd/codex_usage_report)
+}
+
+format_eta() {
+  local seconds=$1
+  python3 - "$seconds" <<'PY'
+import datetime
+import sys
+
+seconds = int(sys.argv[1])
+eta = datetime.datetime.now() + datetime.timedelta(seconds=seconds)
+print(eta.strftime('%Y-%m-%d %H:%M:%S'))
+PY
 }
 
 manual_text=${COOLDOWN_TEXT:-}
@@ -116,6 +145,7 @@ elif (( $# == 1 )) && [[ $1 == Estimated* ]]; then
 fi
 
 if [[ -n "$manual_text" ]]; then
+  log_line "Surveillance démarrée en mode manuel (notification immédiate si délai nul)."
   cooldown_line=$manual_text
 else
   if (( $# )); then
@@ -123,6 +153,8 @@ else
   else
     default_command
   fi
+
+  log_line "Surveillance démarrée. Commande surveillée: ${COMMAND[*]} (intervalle: ${POLL_INTERVAL}s)."
 
   while true; do
     if [[ -n "${COMMAND[*]:-}" ]]; then
@@ -132,10 +164,12 @@ else
       exit 1
     fi
 
+    log_line "Commande exécutée: ${COMMAND[*]}"
     printf '%s\n' "$output"
     cooldown_line=$(cooldown_from_output "$output")
 
     if [[ -z "$cooldown_line" ]]; then
+      log_line "✅ Aucune ligne de cooldown détectée, notification immédiate."
       notify_all "$MESSAGE_BODY"
       exit 0
     fi
@@ -143,22 +177,31 @@ else
     seconds=$(parse_seconds "$cooldown_line")
 
     if [[ "$seconds" -le 0 ]]; then
+      log_line "✅ Temps restant nul ou invalide, notification immédiate."
       notify_all "$MESSAGE_BODY"
       exit 0
     fi
 
-    echo "⏳ Quota en recharge (ligne: '$cooldown_line'). Nouvelle vérification dans $seconds secondes..."
-    sleep "$seconds"
+    eta=$(format_eta "$seconds")
+    sleep_duration=$POLL_INTERVAL
+    if (( seconds < POLL_INTERVAL )); then
+      sleep_duration=$seconds
+    fi
+
+    log_line "⏳ Quota en recharge (ligne: '$cooldown_line'). Notification estimée vers $eta. Prochaine vérification dans $sleep_duration secondes."
+    sleep "$sleep_duration"
   done
 fi
 
 seconds=$(parse_seconds "$cooldown_line")
 
 if [[ "$seconds" -le 0 ]]; then
+  log_line "✅ Temps restant nul ou invalide, notification immédiate."
   notify_all "$MESSAGE_BODY"
   exit 0
 fi
 
-echo "⏳ Cooldown manuel détecté. Attente de $seconds secondes..."
+eta=$(format_eta "$seconds")
+log_line "⏳ Cooldown manuel détecté. Notification estimée vers $eta (attente de $seconds secondes)."
 sleep "$seconds"
 notify_all "$MESSAGE_BODY"
